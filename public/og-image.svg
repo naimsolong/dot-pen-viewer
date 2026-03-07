@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0d0d12"/>
+      <stop offset="100%" stop-color="#16161f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#7c6bff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <!-- Grid dots -->
+    <pattern id="grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="rgba(255,255,255,0.04)"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Decorative frame mockup (right side) -->
+  <rect x="680" y="90" width="460" height="450" rx="12" fill="#1e1e2a" stroke="#2a2a3a" stroke-width="1.5" opacity="0.8"/>
+  <!-- Sidebar mockup -->
+  <rect x="680" y="90" width="120" height="450" rx="12" fill="#16161f" stroke="#2a2a3a" stroke-width="1.5"/>
+  <!-- Sidebar items -->
+  <rect x="696" y="130" width="88" height="28" rx="5" fill="rgba(124,107,255,0.15)" stroke="rgba(124,107,255,0.4)" stroke-width="1"/>
+  <rect x="696" y="168" width="88" height="28" rx="5" fill="rgba(255,255,255,0.03)"/>
+  <rect x="696" y="206" width="88" height="28" rx="5" fill="rgba(255,255,255,0.03)"/>
+  <rect x="696" y="244" width="88" height="28" rx="5" fill="rgba(255,255,255,0.03)"/>
+  <!-- Canvas area mockup -->
+  <rect x="820" y="115" width="300" height="400" rx="8" fill="#111118"/>
+  <!-- Shapes on canvas -->
+  <rect x="860" y="155" width="180" height="100" rx="8" fill="rgba(124,107,255,0.3)" stroke="rgba(124,107,255,0.6)" stroke-width="1.5"/>
+  <ellipse cx="950" cy="300" rx="70" ry="50" fill="rgba(168,85,247,0.25)" stroke="rgba(168,85,247,0.5)" stroke-width="1.5"/>
+  <rect x="870" y="370" width="100" height="12" rx="3" fill="rgba(255,255,255,0.12)"/>
+  <rect x="870" y="392" width="140" height="8" rx="3" fill="rgba(255,255,255,0.07)"/>
+  <rect x="870" y="408" width="120" height="8" rx="3" fill="rgba(255,255,255,0.07)"/>
+  <!-- Zoom toolbar -->
+  <rect x="860" y="460" width="120" height="32" rx="8" fill="#16161f" stroke="#2a2a3a" stroke-width="1"/>
+  <text x="920" y="481" font-family="monospace" font-size="11" fill="#7777a0" text-anchor="middle">100%  ⊡  1:1</text>
+
+  <!-- Logo mark -->
+  <rect x="90" y="200" width="64" height="64" rx="14" fill="url(#accent)"/>
+  <text x="122" y="248" font-size="34" text-anchor="middle" font-family="sans-serif">✏️</text>
+
+  <!-- Title -->
+  <text x="90" y="310" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+        font-size="58" font-weight="800" letter-spacing="-1.5" fill="white">dot-pen viewer</text>
+
+  <!-- Tagline -->
+  <text x="90" y="360" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+        font-size="22" fill="#7777a0">
+    View .pen design files instantly in your browser
+  </text>
+
+  <!-- Feature pills -->
+  <rect x="90"  y="395" width="130" height="34" rx="17" fill="rgba(124,107,255,0.15)" stroke="rgba(124,107,255,0.35)" stroke-width="1"/>
+  <text x="155" y="417" font-family="sans-serif" font-size="13" fill="#a0a0e0" text-anchor="middle">Drag &amp; Drop</text>
+
+  <rect x="232" y="395" width="112" height="34" rx="17" fill="rgba(124,107,255,0.15)" stroke="rgba(124,107,255,0.35)" stroke-width="1"/>
+  <text x="288" y="417" font-family="sans-serif" font-size="13" fill="#a0a0e0" text-anchor="middle">URL Import</text>
+
+  <rect x="356" y="395" width="148" height="34" rx="17" fill="rgba(124,107,255,0.15)" stroke="rgba(124,107,255,0.35)" stroke-width="1"/>
+  <text x="430" y="417" font-family="sans-serif" font-size="13" fill="#a0a0e0" text-anchor="middle">100% Client-Side</text>
+
+  <!-- Disclaimer badge -->
+  <rect x="90" y="450" width="290" height="32" rx="8" fill="#1a1400" stroke="#3d3200" stroke-width="1"/>
+  <text x="104" y="471" font-family="sans-serif" font-size="12" fill="#d4a800">⚠️  No data saved · Nothing leaves your browser</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="616" width="1200" height="4" fill="url(#accent)" opacity="0.7"/>
+</svg>

@@ -16,6 +16,22 @@ export default {
       );
     }
 
+    // Serve og-image.svg with correct content-type for social crawlers
+    if (url.pathname === '/og-image.png' || url.pathname === '/og-image.svg') {
+      const svgRes = await env.ASSETS.fetch(
+        new Request(new URL('/og-image.svg', request.url), request)
+      ).catch(() => null);
+      if (svgRes) {
+        const body = await svgRes.text();
+        return new Response(body, {
+          headers: {
+            'Content-Type':  'image/svg+xml',
+            'Cache-Control': 'public, max-age=86400',
+          },
+        });
+      }
+    }
+
     // Serve all other static assets (if any are added later)
     const assetResponse = await env.ASSETS.fetch(request).catch(() => null);
     if (assetResponse && assetResponse.status !== 404) return assetResponse;
