@@ -155,13 +155,18 @@
     /* ─── Landing ─── */
     #landing {
       flex: 1;
+      overflow-y: auto;
+      /* no justify-content:center here — that clips the top when content overflows */
+    }
+    .landing-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 28px;
       padding: 40px 20px;
-      overflow-y: auto;
+      /* margin:auto pushes the block to center vertically when there's room,
+         but still allows scrolling to the very top when content is taller */
+      margin: auto;
     }
 
     .hero {
@@ -495,6 +500,7 @@
 
   <!-- ── Landing ── -->
   <div id="landing">
+  <div class="landing-inner">
     <div class="hero">
       <h2>The browser viewer for pencil.dev</h2>
       <p>
@@ -562,6 +568,7 @@
       </p>
       <div class="feedback" id="urlFeedback"></div>
     </div>
+  </div><!-- /landing-inner -->
   </div><!-- /landing -->
 
   <!-- ── Viewer ── -->
