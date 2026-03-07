@@ -10,3 +10,9 @@ binding   = "ASSETS"
 
 # Optional: uncomment and fill in your account ID from `wrangler whoami`
 # account_id = "your-account-id-here"
+
+# Custom domain — add this domain in Cloudflare dashboard under Workers → Triggers → Custom Domains
+# then run: wrangler deploy
+[[routes]]
+pattern = "dot-pen-viewer.naimsolong.com/*"
+zone_name = "naimsolong.com"

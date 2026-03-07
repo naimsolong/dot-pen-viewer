@@ -3,7 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dot-pen viewer</title>
+
+  <!-- Primary -->
+  <title>dot-pen viewer — View .pen design files in your browser</title>
+  <meta name="title"       content="dot-pen viewer — View .pen design files in your browser" />
+  <meta name="description" content="A companion viewer for pencil.dev — instantly preview .pen design files in your browser via drag & drop, file upload, or GitHub URL. Supports pencil.dev JSON and Evolus Pencil ZIP/XML formats. 100% client-side, no data saved." />
+  <meta name="keywords"    content="pen file viewer, pencil.dev, evolus pencil, pen format, design file viewer, prototyping, mockup viewer, browser tool" />
+  <meta name="author"      content="dot-pen viewer" />
+  <meta name="robots"      content="index, follow" />
+  <link rel="canonical"    href="https://dot-pen-viewer.naimsolong.com/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://dot-pen-viewer.naimsolong.com/" />
+  <meta property="og:title"       content="dot-pen viewer — View .pen design files in your browser" />
+  <meta property="og:description" content="Instantly preview Pencil (.pen) design files — drag & drop, upload, or load from a GitHub URL. Supports pencil.dev JSON and Evolus Pencil ZIP/XML formats. 100% client-side, no data saved." />
+  <meta property="og:image"       content="https://dot-pen-viewer.naimsolong.com/og-image.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt"   content="dot-pen viewer — a dark-themed browser tool for previewing .pen design files" />
+  <meta property="og:site_name"   content="dot-pen viewer" />
+  <meta property="og:locale"      content="en_US" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:url"         content="https://dot-pen-viewer.naimsolong.com/" />
+  <meta name="twitter:title"       content="dot-pen viewer — View .pen design files in your browser" />
+  <meta name="twitter:description" content="Instantly preview Pencil (.pen) design files — drag & drop, upload, or load from a GitHub URL. 100% client-side, nothing leaves your browser." />
+  <meta name="twitter:image"       content="https://dot-pen-viewer.naimsolong.com/og-image.png" />
+  <meta name="twitter:image:alt"   content="dot-pen viewer interface showing a .pen design file rendered in the browser" />
+
+  <!-- Favicon (inline SVG as data URI) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%237c6bff'/><text y='23' x='6' font-size='20'>✏️</text></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%237c6bff'/><text y='23' x='6' font-size='20'>✏️</text></svg>" />
+
+  <!-- Theme color for browser chrome -->
+  <meta name="theme-color" content="#7c6bff" />
+  <meta name="color-scheme" content="dark" />
   <style>
     :root {
       --bg: #0d0d12;
@@ -119,13 +155,18 @@
     /* ─── Landing ─── */
     #landing {
       flex: 1;
+      overflow-y: auto;
+      /* no justify-content:center here — that clips the top when content overflows */
+    }
+    .landing-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 28px;
       padding: 40px 20px;
-      overflow-y: auto;
+      /* margin:auto pushes the block to center vertically when there's room,
+         but still allows scrolling to the very top when content is taller */
+      margin: auto;
     }
 
     .hero {
@@ -143,6 +184,53 @@
       letter-spacing: -0.5px;
     }
     .hero p { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; }
+    .hero a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .hero a:hover { text-decoration: underline; }
+    .hero code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: var(--text);
+    }
+
+    /* ─── Feature Strip ─── */
+    .feature-strip {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+    }
+    .feature-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .feature-card .fc-icon { font-size: 18px; }
+    .feature-card .fc-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .feature-card .fc-body {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    @media (max-width: 480px) {
+      .feature-strip { flex-direction: column; }
+    }
 
     /* ─── Drop Zone ─── */
     .drop-zone {
@@ -412,12 +500,34 @@
 
   <!-- ── Landing ── -->
   <div id="landing">
+  <div class="landing-inner">
     <div class="hero">
-      <h2>View .pen files in your browser</h2>
+      <h2>The browser viewer for pencil.dev</h2>
       <p>
-        Instantly preview <strong>Pencil</strong> design files — drag &amp; drop, upload, or
-        load from a repository URL. Everything runs client-side; nothing leaves your device.
+        <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer">pencil.dev</a>
+        is a VS Code-integrated design tool that saves your designs as <code>.pen</code> files
+        right alongside your code. This companion viewer lets you open, inspect, and share
+        those files instantly in any browser — no install, no sign-up, nothing leaves your device.
       </p>
+    </div>
+
+    <!-- Feature Strip -->
+    <div class="feature-strip">
+      <div class="feature-card">
+        <span class="fc-icon">🖊️</span>
+        <span class="fc-title">pencil.dev companion</span>
+        <span class="fc-body">Built for <code>.pen</code> files created by the pencil.dev VS Code extension.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🔗</span>
+        <span class="fc-title">Git-friendly</span>
+        <span class="fc-body">Paste a GitHub URL to preview designs stored directly in your repository.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🔒</span>
+        <span class="fc-title">Zero install</span>
+        <span class="fc-body">Runs 100% in the browser — no server, no account, no data transmitted.</span>
+      </div>
     </div>
 
     <!-- Drop Zone -->
@@ -458,6 +568,7 @@
       </p>
       <div class="feedback" id="urlFeedback"></div>
     </div>
+  </div><!-- /landing-inner -->
   </div><!-- /landing -->
 
   <!-- ── Viewer ── -->
