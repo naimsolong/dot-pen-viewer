@@ -1,0 +1,12 @@
+name            = "dot-pen-viewer"
+main            = "worker.js"
+compatibility_date = "2024-09-23"
+
+# Serve static files from ./public
+# Wrangler uploads them to Workers Assets and makes them available via env.ASSETS
+[assets]
+directory = "./public"
+binding   = "ASSETS"
+
+# Optional: uncomment and fill in your account ID from `wrangler whoami`
+# account_id = "your-account-id-here"

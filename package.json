@@ -1,0 +1,14 @@
+{
+  "name": "dot-pen-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-only viewer for .pen design files (pencil.dev + Evolus Pencil formats)",
+  "scripts": {
+    "dev":    "wrangler dev",
+    "deploy": "wrangler deploy",
+    "preview": "npx serve public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

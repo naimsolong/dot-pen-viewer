@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dot-pen viewer</title>
+  <style>
+    :root {
+      --bg: #0d0d12;
+      --surface: #16161f;
+      --surface2: #1e1e2a;
+      --surface3: #252534;
+      --border: #2a2a3a;
+      --accent: #7c6bff;
+      --accent-hover: #9b8dff;
+      --accent-dim: rgba(124,107,255,0.12);
+      --text: #e4e4f0;
+      --text-muted: #7777a0;
+      --error: #ff6b6b;
+      --warn-bg: #1a1400;
+      --warn-border: #3d3200;
+      --warn-text: #d4a800;
+      --success: #4ade80;
+      --radius: 8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    /* ─── Header ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #7c6bff 0%, #a855f7 100%);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .disclaimer-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 20px;
+      font-size: 11.5px;
+      color: var(--warn-text);
+      white-space: nowrap;
+    }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, transform 0.1s;
+      outline: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface3); color: var(--text); }
+
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
+
+    /* ─── Main ─── */
+    main { flex: 1; overflow: hidden; display: flex; position: relative; }
+
+    /* ─── Landing ─── */
+    #landing {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 480px;
+    }
+    .hero h2 {
+      font-size: 30px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c6bff 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    .hero p { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; }
+
+    /* ─── Drop Zone ─── */
+    .drop-zone {
+      width: 100%;
+      max-width: 520px;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 44px 32px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--surface);
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      transform: scale(1.01);
+    }
+    .drop-icon { font-size: 44px; margin-bottom: 14px; }
+    .drop-zone h3 { font-size: 17px; font-weight: 700; margin-bottom: 7px; }
+    .drop-zone p { color: var(--text-muted); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+
+    /* ─── Divider ─── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+    }
+    .or-line { flex: 1; height: 1px; background: var(--border); }
+    .or-divider span { color: var(--text-muted); font-size: 12px; }
+
+    /* ─── URL Section ─── */
+    .url-section { width: 100%; max-width: 520px; }
+    .url-section label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+    }
+    .url-row { display: flex; gap: 8px; }
+    .url-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .url-input:focus { border-color: var(--accent); }
+    .url-input::placeholder { color: var(--text-muted); }
+
+    .hint {
+      margin-top: 7px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── Feedback ─── */
+    .feedback { margin-top: 8px; }
+    .error-msg {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      color: var(--error);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .loading-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Viewer ─── */
+    #viewer { flex: 1; display: flex; overflow: hidden; }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      width: 210px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-head {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-head .label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .badge {
+      font-size: 10px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1px 6px;
+      color: var(--text-muted);
+    }
+
+    .frame-list { flex: 1; overflow-y: auto; padding: 6px; }
+    .frame-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background 0.1s, color 0.1s;
+      user-select: none;
+    }
+    .frame-item:hover { background: var(--surface2); color: var(--text); }
+    .frame-item.active { background: var(--accent-dim); color: var(--accent); }
+    .frame-icon {
+      width: 16px; height: 16px;
+      border: 1.5px solid currentColor;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .frame-name {
+      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px;
+    }
+    .frame-dims { font-size: 10px; opacity: 0.6; }
+
+    /* ─── Canvas ─── */
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #0a0a0f;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .canvas-viewport {
+      width: 100%; height: 100%;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+    }
+    .canvas-viewport:active { cursor: grabbing; }
+    .canvas-transform {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    .canvas-svg {
+      display: block;
+      filter: drop-shadow(0 12px 40px rgba(0,0,0,0.7));
+    }
+
+    /* ─── Toolbar ─── */
+    .toolbar {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 5px 7px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      white-space: nowrap;
+    }
+    .tb-btn {
+      width: 30px; height: 30px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      transition: background 0.1s, color 0.1s;
+    }
+    .tb-btn:hover { background: var(--surface2); color: var(--text); }
+    .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
+    .zoom-lbl {
+      font-size: 11.5px; font-weight: 600;
+      color: var(--text-muted);
+      min-width: 42px; text-align: center;
+      cursor: pointer;
+    }
+    .zoom-lbl:hover { color: var(--text); }
+
+    /* ─── Empty / Info states ─── */
+    .empty-canvas {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .empty-canvas svg { opacity: 0.15; }
+    .empty-canvas p { font-size: 13px; }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">✏️</div>
+    <span>dot-pen viewer</span>
+  </div>
+
+  <div class="disclaimer-pill">
+    ⚠️ Client-only · No data saved or transmitted · All processing stays in your browser
+  </div>
+
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" id="backBtn" hidden onclick="showLanding()">← New File</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<main>
+
+  <!-- ── Landing ── -->
+  <div id="landing">
+    <div class="hero">
+      <h2>View .pen files in your browser</h2>
+      <p>
+        Instantly preview <strong>Pencil</strong> design files — drag &amp; drop, upload, or
+        load from a repository URL. Everything runs client-side; nothing leaves your device.
+      </p>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone" role="button" tabindex="0"
+         aria-label="Drop a .pen file or click to choose">
+      <div class="drop-icon">📂</div>
+      <h3>Drop your .pen file here</h3>
+      <p>
+        Supports <strong>pencil.dev</strong> JSON format and<br>
+        <strong>Evolus Pencil</strong> ZIP/XML format (.pen, .epz, .ep)
+      </p>
+      <button class="btn btn-primary" type="button"
+              onclick="event.stopPropagation(); fileInput.click()">
+        Choose File
+      </button>
+      <input type="file" id="fileInput" accept=".pen,.epz,.ep,.json" hidden>
+    </div>
+
+    <!-- Divider -->
+    <div class="or-divider">
+      <div class="or-line"></div>
+      <span>OR LOAD FROM URL</span>
+      <div class="or-line"></div>
+    </div>
+
+    <!-- URL Input -->
+    <div class="url-section">
+      <label for="urlInput">Repository / File URL</label>
+      <div class="url-row">
+        <input type="url" id="urlInput" class="url-input"
+               placeholder="https://github.com/user/repo/blob/main/design.pen"
+               autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" type="button" onclick="loadFromUrl()">Load</button>
+      </div>
+      <p class="hint">
+        Supports GitHub blob/raw URLs, direct file links.
+        GitHub URLs are automatically converted to raw content URLs.
+      </p>
+      <div class="feedback" id="urlFeedback"></div>
+    </div>
+  </div><!-- /landing -->
+
+  <!-- ── Viewer ── -->
+  <div id="viewer" hidden>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-head">
+        <span class="label">Frames / Pages</span>
+        <span class="badge" id="frameCount">0</span>
+      </div>
+      <div class="frame-list" id="frameList"></div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="canvas-wrap">
+      <div class="canvas-viewport" id="viewport">
+        <div class="canvas-transform" id="canvasTransform">
+          <svg class="canvas-svg" id="mainSvg"
+               xmlns="http://www.w3.org/2000/svg"
+               xmlns:xlink="http://www.w3.org/1999/xlink"></svg>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-canvas" id="emptyCanvas" hidden>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="8" width="48" height="48" rx="6" stroke="#7777a0" stroke-width="2"/>
+          <path d="M20 32h24M32 20v24" stroke="#7777a0" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>Select a frame from the sidebar</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button class="tb-btn" onclick="adjustZoom(-0.15)" title="Zoom out (−)">−</button>
+        <span class="zoom-lbl" id="zoomLbl" onclick="resetZoom()" title="Reset to 100%">100%</span>
+        <button class="tb-btn" onclick="adjustZoom(0.15)" title="Zoom in (+)">+</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="fitToScreen()" title="Fit to screen">⊡</button>
+        <button class="tb-btn" onclick="resetZoom()" title="Actual size (1:1)"
+                style="font-size:10px;font-weight:700;">1:1</button>
+      </div>
+    </div>
+
+  </div><!-- /viewer -->
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let penDoc      = null;
+let frames      = [];
+let selectedFr  = null;
+let reusableMap = {};
+let zoom        = 1;
+let panX        = 0;
+let panY        = 0;
+let isPanning   = false;
+let panStart    = { x: 0, y: 0 };
+
+// ─────────────────────────────────────────
+// DRAG & DROP + FILE INPUT
+// ─────────────────────────────────────────
+const dropZone  = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', e => {
+  if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('drag-over');
+});
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+dropZone.addEventListener('click', e => {
+  if (e.target === dropZone) fileInput.click();
+});
+dropZone.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') fileInput.click();
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+// ─────────────────────────────────────────
+// FILE HANDLING
+// ─────────────────────────────────────────
+async function handleFile(file) {
+  clearFeedback();
+  showLoading();
+  try {
+    const buf = await file.arrayBuffer();
+    await processBuf(buf, file.name);
+  } catch (err) {
+    showError('Failed to read file: ' + err.message);
+  }
+}
+
+async function processBuf(buf, name) {
+  const header = new Uint8Array(buf, 0, 4);
+  const isZip  = header[0] === 0x50 && header[1] === 0x4B;
+
+  if (isZip) {
+    await processZip(buf, name);
+  } else {
+    const text = new TextDecoder().decode(buf);
+    processJson(text, name);
+  }
+}
+
+function processJson(text, name) {
+  let doc;
+  try {
+    doc = JSON.parse(text);
+  } catch {
+    showError('Not a valid .pen file — expected JSON. If this is an Evolus Pencil file, it may use the ZIP/XML format.');
+    return;
+  }
+  openDoc(doc, name);
+}
+
+async function processZip(buf, name) {
+  if (!window.JSZip) {
+    await loadScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+  }
+  let zip;
+  try {
+    zip = await JSZip.loadAsync(buf);
+  } catch (e) {
+    showError('Cannot open ZIP: ' + e.message);
+    return;
+  }
+
+  // Try Evolus Pencil content.xml
+  const contentFile = zip.file(/^content\.xml$/i)[0];
+  if (contentFile) {
+    const xml = await contentFile.async('string');
+    openXmlDoc(xml, zip, name);
+    return;
+  }
+
+  // Try Definition.xml (stencil collection)
+  const defFile = zip.file(/^Definition\.xml$/i)[0];
+  if (defFile) {
+    const xml = await defFile.async('string');
+    openStencilXml(xml, name);
+    return;
+  }
+
+  // Try any .pen JSON inside the zip
+  const penFile = zip.file(/\.pen$/i)[0];
+  if (penFile) {
+    const text = await penFile.async('string');
+    processJson(text, name);
+    return;
+  }
+
+  showError('Unrecognized ZIP structure. Expected content.xml (Evolus Pencil) or a .pen JSON file.');
+}
+
+// ─── Evolus Pencil XML doc ───
+function openXmlDoc(xmlText, zip, name) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+  const parseErr = xmlDoc.querySelector('parsererror');
+  if (parseErr) { showError('Malformed XML in content.xml.'); return; }
+
+  // Pages can be embedded or referenced
+  const pageEls = Array.from(xmlDoc.querySelectorAll('Page'));
+
+  const doc = {
+    _format: 'evolus',
+    name,
+    children: pageEls.map((p, i) => ({
+      id:    p.getAttribute('id')   || `page_${i}`,
+      type:  'frame',
+      name:  p.getAttribute('name') || p.getAttribute('title') || `Page ${i + 1}`,
+      width:  Number(p.getAttribute('w')  || p.getAttribute('width')  || 1024),
+      height: Number(p.getAttribute('h')  || p.getAttribute('height') || 768),
+      _evolusPage: p,
+      _zip: zip,
+    })),
+  };
+
+  if (doc.children.length === 0) {
+    // Maybe the whole file is a single page
+    const root = xmlDoc.documentElement;
+    doc.children = [{
+      id: 'page_0', type: 'frame', name: name,
+      width:  Number(root.getAttribute('w')  || root.getAttribute('width')  || 1024),
+      height: Number(root.getAttribute('h')  || root.getAttribute('height') || 768),
+      _evolusPage: root,
+      _zip: zip,
+    }];
+  }
+
+  openDoc(doc, name);
+}
+
+// ─── Evolus Stencil XML ───
+function openStencilXml(xmlText, name) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+  const shapes = Array.from(xmlDoc.querySelectorAll('Shape'));
+
+  const doc = {
+    _format: 'evolus-stencil',
+    name,
+    children: [{
+      id: 'stencils', type: 'frame', name: name || 'Stencil Collection',
+      width: 900, height: Math.max(600, shapes.length * 100),
+      _stencilShapes: shapes,
+    }],
+  };
+  openDoc(doc, name);
+}
+
+// ─────────────────────────────────────────
+// URL LOADING
+// ─────────────────────────────────────────
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadFromUrl();
+});
+
+async function loadFromUrl() {
+  const raw = document.getElementById('urlInput').value.trim();
+  if (!raw) return;
+
+  clearFeedback();
+  showLoading();
+
+  let url;
+  try {
+    url = transformGitHubUrl(raw);
+  } catch {
+    showError('Invalid URL.');
+    return;
+  }
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    const buf = await res.arrayBuffer();
+    clearFeedback();
+    await processBuf(buf, url.split('/').pop() || 'design.pen');
+  } catch (err) {
+    showError(
+      `Could not load "${url}". ` +
+      (err.message.includes('Failed to fetch')
+        ? 'The server may not allow cross-origin requests (CORS). Try using a GitHub raw URL instead.'
+        : err.message)
+    );
+  }
+}
+
+function transformGitHubUrl(url) {
+  // github.com/.../blob/... → raw.githubusercontent.com/...
+  const m = url.match(/^https?:\/\/github\.com\/([^/]+\/[^/]+)\/blob\/(.+)$/);
+  if (m) return `https://raw.githubusercontent.com/${m[1]}/${m[2]}`;
+  return url;
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s  = document.createElement('script');
+    s.src    = src;
+    s.onload = res;
+    s.onerror = () => rej(new Error('Failed to load ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+// ─────────────────────────────────────────
+// DOCUMENT PROCESSING
+// ─────────────────────────────────────────
+function openDoc(doc, name) {
+  penDoc = doc;
+
+  // Normalise: some .pen files wrap content in a "document" key
+  const rootChildren = doc.children
+    || doc.document?.children
+    || (Array.isArray(doc) ? doc : null)
+    || [];
+
+  reusableMap = {};
+  collectReusables(rootChildren);
+
+  frames = extractTopFrames(rootChildren, doc);
+
+  if (frames.length === 0) {
+    showError('No frames or pages found in this file.');
+    return;
+  }
+
+  clearFeedback();
+  showViewer(name);
+}
+
+function collectReusables(nodes) {
+  for (const n of nodes) {
+    if (!n) continue;
+    if (n.reusable && n.id) reusableMap[n.id] = n;
+    if (n.children) collectReusables(n.children);
+  }
+}
+
+function extractTopFrames(children, doc) {
+  // Frames are top-level 'frame' or 'canvas' nodes
+  const frames = children.filter(c =>
+    c && (c.type === 'frame' || c.type === 'canvas' || c._evolusPage || c._stencilShapes)
+  );
+
+  if (frames.length > 0) return frames;
+
+  // Fallback: wrap everything in a single virtual frame
+  if (children.length > 0) {
+    const bounds = boundingBox(children);
+    return [{
+      id: '__root__', type: 'frame',
+      name: doc.name || 'Document',
+      x: bounds.x, y: bounds.y,
+      width: bounds.w || 1920, height: bounds.h || 1080,
+      fill: '#ffffff',
+      children,
+      _virtual: true,
+    }];
+  }
+
+  return [];
+}
+
+function boundingBox(nodes) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const n of nodes) {
+    if (n.x !== undefined) {
+      minX = Math.min(minX, n.x || 0);
+      minY = Math.min(minY, n.y || 0);
+      maxX = Math.max(maxX, (n.x || 0) + (n.width  || 0));
+      maxY = Math.max(maxY, (n.y || 0) + (n.height || 0));
+    }
+  }
+  return isFinite(minX)
+    ? { x: minX, y: minY, w: maxX - minX, h: maxY - minY }
+    : { x: 0, y: 0, w: 1920, h: 1080 };
+}
+
+// ─────────────────────────────────────────
+// UI – NAVIGATION
+// ─────────────────────────────────────────
+function showViewer(name) {
+  document.getElementById('landing').hidden = true;
+  document.getElementById('viewer').hidden  = false;
+  document.getElementById('backBtn').hidden = false;
+  renderSidebar();
+  selectFrame(frames[0]);
+}
+
+function showLanding() {
+  document.getElementById('landing').hidden = false;
+  document.getElementById('viewer').hidden  = true;
+  document.getElementById('backBtn').hidden = true;
+  penDoc = null; frames = []; selectedFr = null;
+  zoom = 1; panX = 0; panY = 0;
+  document.getElementById('mainSvg').innerHTML = '';
+}
+
+function renderSidebar() {
+  const list = document.getElementById('frameList');
+  document.getElementById('frameCount').textContent = frames.length;
+  list.innerHTML = '';
+
+  frames.forEach((fr, i) => {
+    const item = document.createElement('div');
+    item.className = 'frame-item';
+    item.dataset.frameId = fr.id;
+
+    const dims = fr.width && fr.height
+      ? `${Math.round(fr.width)}×${Math.round(fr.height)}`
+      : '';
+
+    item.innerHTML = `
+      <div class="frame-icon"></div>
+      <span class="frame-name">${esc(fr.name || fr.id || `Frame ${i + 1}`)}</span>
+      ${dims ? `<span class="frame-dims">${dims}</span>` : ''}
+    `;
+    item.addEventListener('click', () => selectFrame(fr));
+    list.appendChild(item);
+  });
+}
+
+function selectFrame(fr) {
+  selectedFr = fr;
+  document.querySelectorAll('.frame-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.frameId === fr.id);
+  });
+  renderSelectedFrame();
+}
+
+// ─────────────────────────────────────────
+// RENDERING
+// ─────────────────────────────────────────
+function renderSelectedFrame() {
+  if (!selectedFr) return;
+
+  const svg = document.getElementById('mainSvg');
+  const fr  = selectedFr;
+  const w   = fr.width  || 1920;
+  const h   = fr.height || 1080;
+
+  svg.setAttribute('width',   w);
+  svg.setAttribute('height',  h);
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.innerHTML = '';
+
+  const defs = svgEl('defs');
+  svg.appendChild(defs);
+
+  if (fr._evolusPage) {
+    renderEvolusPage(svg, fr, defs);
+  } else if (fr._stencilShapes) {
+    renderStencils(svg, fr, defs);
+  } else {
+    renderJsonFrame(svg, fr, defs);
+  }
+
+  fitToScreen();
+}
+
+// ── JSON / pencil.dev ──
+function renderJsonFrame(svg, fr, defs) {
+  // Background
+  svg.appendChild(svgEl('rect', {
+    x: 0, y: 0, width: fr.width || 1920, height: fr.height || 1080,
+    fill: resolveColor(fr.fill) || '#ffffff',
+  }));
+
+  // Offset children if frame has its own x/y (when extracted as top-level)
+  const ox = fr._virtual ? -(fr.x || 0) : 0;
+  const oy = fr._virtual ? -(fr.y || 0) : 0;
+
+  for (const child of (fr.children || [])) {
+    const el = renderNode(child, defs, ox, oy);
+    if (el) svg.appendChild(el);
+  }
+}
+
+function renderNode(node, defs, ox, oy) {
+  if (!node || typeof node !== 'object') return null;
+  const t = node.type;
+  try {
+    switch (t) {
+      case 'rectangle':          return renderRect(node, defs, ox, oy);
+      case 'ellipse':            return renderEllipse(node, defs, ox, oy);
+      case 'line':               return renderLine(node, defs, ox, oy);
+      case 'polygon':            return renderPolygon(node, defs, ox, oy);
+      case 'star':               return renderStar(node, defs, ox, oy);
+      case 'path':               return renderPath(node, defs, ox, oy);
+      case 'text':               return renderText(node, ox, oy);
+      case 'frame':
+      case 'canvas':             return renderGroupNode(node, defs, true, ox, oy);
+      case 'group':              return renderGroupNode(node, defs, false, ox, oy);
+      case 'boolean_operation':
+      case 'booleanOperation':   return renderGroupNode(node, defs, false, ox, oy);
+      case 'ref':                return renderRef(node, defs, ox, oy);
+      case 'note':               return renderNote(node, ox, oy);
+      case 'context':
+      case 'prompt':             return renderNote(node, ox, oy); // treat as note
+      case 'icon_font':
+      case 'iconFont':           return renderIconFont(node, ox, oy);
+      case 'image':              return renderImage(node, defs, ox, oy);
+      default:                   return null;
+    }
+  } catch { return null; }
+}
+
+function renderRect(n, defs, ox, oy) {
+  const el = svgEl('rect', {
+    x: (n.x || 0) + ox, y: (n.y || 0) + oy,
+    width:  Math.max(0, n.width  || 0),
+    height: Math.max(0, n.height || 0),
+    fill:   fillAttr(n, defs),
+    ...strokeAttrs(n),
+    ...opacityAttr(n),
+    ...(n.cornerRadius ? { rx: n.cornerRadius, ry: n.cornerRadius } : {}),
+  });
+  return withRotation(el, n, ox, oy);
+}
+
+function renderEllipse(n, defs, ox, oy) {
+  const cx = (n.x || 0) + ox + (n.width  || 0) / 2;
+  const cy = (n.y || 0) + oy + (n.height || 0) / 2;
+  const rx = (n.width  || 0) / 2;
+  const ry = (n.height || 0) / 2;
+
+  let el;
+  if (n.innerRadius > 0) {
+    const irx = rx * n.innerRadius;
+    const iry = ry * n.innerRadius;
+    el = svgEl('path', {
+      d: `M ${cx-rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx+rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx-rx} ${cy} Z `
+       + `M ${cx-irx} ${cy} A ${irx} ${iry} 0 1 1 ${cx+irx} ${cy} A ${irx} ${iry} 0 1 1 ${cx-irx} ${cy} Z`,
+      fill: fillAttr(n, defs),
+      'fill-rule': 'evenodd',
+      ...strokeAttrs(n), ...opacityAttr(n),
+    });
+  } else {
+    el = svgEl('ellipse', {
+      cx, cy, rx, ry,
+      fill: fillAttr(n, defs),
+      ...strokeAttrs(n), ...opacityAttr(n),
+    });
+  }
+  return withRotation(el, n, ox, oy);
+}
+
+function renderLine(n, defs, ox, oy) {
+  const x1 = (n.x || 0) + ox, y1 = (n.y || 0) + oy;
+  const x2 = x1 + (n.width || 0), y2 = y1 + (n.height || 0);
+  const stroke = n.stroke
+    ? resolveColor(typeof n.stroke === 'string' ? n.stroke : n.stroke.color)
+    : resolveColor(n.fill) || '#000';
+
+  return svgEl('line', {
+    x1, y1, x2, y2,
+    stroke: stroke || '#000',
+    'stroke-width': (typeof n.stroke === 'object' ? n.stroke.width : null) || n.strokeWidth || 1,
+    ...opacityAttr(n),
+  });
+}
+
+function renderPolygon(n, defs, ox, oy) {
+  const sides = n.polygonCount || n.pointCount || 6;
+  const cx = (n.x || 0) + ox + (n.width  || 0) / 2;
+  const cy = (n.y || 0) + oy + (n.height || 0) / 2;
+  const rx = (n.width  || 0) / 2;
+  const ry = (n.height || 0) / 2;
+  const pts = [];
+  for (let i = 0; i < sides; i++) {
+    const a = (2 * Math.PI * i / sides) - Math.PI / 2;
+    pts.push(`${cx + rx * Math.cos(a)},${cy + ry * Math.sin(a)}`);
+  }
+  const el = svgEl('polygon', {
+    points: pts.join(' '),
+    fill: fillAttr(n, defs),
+    ...strokeAttrs(n), ...opacityAttr(n),
+  });
+  return withRotation(el, n, ox, oy);
+}
+
+function renderStar(n, defs, ox, oy) {
+  const pts  = n.pointCount || 5;
+  const inner = n.starInnerRadius || 0.38;
+  const cx = (n.x || 0) + ox + (n.width  || 0) / 2;
+  const cy = (n.y || 0) + oy + (n.height || 0) / 2;
+  const rx = (n.width  || 0) / 2;
+  const ry = (n.height || 0) / 2;
+  const irx = rx * inner, iry = ry * inner;
+  const coords = [];
+  for (let i = 0; i < pts * 2; i++) {
+    const a  = (Math.PI * i / pts) - Math.PI / 2;
+    const r  = i % 2 === 0 ? 1 : inner;
+    const cr = i % 2 === 0 ? rx : irx;
+    const cr2 = i % 2 === 0 ? ry : iry;
+    coords.push(`${cx + cr * Math.cos(a)},${cy + cr2 * Math.sin(a)}`);
+  }
+  const el = svgEl('polygon', {
+    points: coords.join(' '),
+    fill: fillAttr(n, defs),
+    ...strokeAttrs(n), ...opacityAttr(n),
+  });
+  return withRotation(el, n, ox, oy);
+}
+
+function renderPath(n, defs, ox, oy) {
+  const d = n.d || n.path || n.data;
+  if (!d) return null;
+  const el = svgEl('path', {
+    d, fill: fillAttr(n, defs),
+    'fill-rule': n.fillRule || 'nonzero',
+    ...strokeAttrs(n), ...opacityAttr(n),
+  });
+  if (ox || oy || n.x || n.y) {
+    el.setAttribute('transform',
+      `translate(${(n.x || 0) + ox}, ${(n.y || 0) + oy})`);
+  }
+  return withRotation(el, n, ox, oy);
+}
+
+function renderText(n, ox, oy) {
+  const g = svgEl('g', {
+    transform: `translate(${(n.x || 0) + ox}, ${(n.y || 0) + oy})`,
+    ...opacityAttr(n),
+  });
+
+  const fontSize  = resolveDim(n.fontSize)  || 16;
+  const lineHt    = resolveDim(n.lineHeight) || fontSize * 1.4;
+  const fill      = resolveColor(n.fill)     || '#000000';
+  const family    = n.fontFamily || 'system-ui,-apple-system,sans-serif';
+  const weight    = n.fontWeight || 'normal';
+  const style     = n.fontStyle  || 'normal';
+  const align     = n.textAlign  || 'left';
+  const width     = n.width      || 9999;
+  const anchor    = align === 'center' ? 'middle' : align === 'right' ? 'end' : 'start';
+  const tx        = align === 'center' ? width / 2 : align === 'right' ? width : 0;
+  const content   = String(n.content || n.text || n.value || '');
+  const lines     = content.split('\n');
+
+  lines.forEach((line, i) => {
+    const t = svgEl('text', {
+      x: tx, y: fontSize + i * lineHt,
+      fill, 'font-size': fontSize, 'font-weight': weight,
+      'font-style': style, 'font-family': family, 'text-anchor': anchor,
+    });
+    if (n.letterSpacing) t.setAttribute('letter-spacing', n.letterSpacing);
+    if (n.textDecoration) t.setAttribute('text-decoration', n.textDecoration);
+    t.textContent = line === '' ? ' ' : line;
+    g.appendChild(t);
+  });
+
+  return g;
+}
+
+function renderGroupNode(n, defs, isFrame, ox, oy) {
+  const nx = (n.x || 0) + ox;
+  const ny = (n.y || 0) + oy;
+  const g  = svgEl('g', {
+    transform: `translate(${nx},${ny})`,
+    ...opacityAttr(n),
+  });
+
+  if (isFrame) {
+    if (n.fill && n.fill !== 'none') {
+      g.appendChild(svgEl('rect', {
+        x: 0, y: 0, width: n.width || 0, height: n.height || 0,
+        fill: fillAttr(n, defs),
+      }));
+    }
+    if (n.width && n.height) {
+      const clipId = `clip_${n.id || uid()}`;
+      const cp     = svgEl('clipPath', { id: clipId });
+      cp.appendChild(svgEl('rect', { x: 0, y: 0, width: n.width, height: n.height }));
+      defs.appendChild(cp);
+      g.setAttribute('clip-path', `url(#${clipId})`);
+    }
+  }
+
+  for (const child of (n.children || [])) {
+    const el = renderNode(child, defs, 0, 0);
+    if (el) g.appendChild(el);
+  }
+
+  if (isFrame && n.stroke) {
+    g.appendChild(svgEl('rect', {
+      x: 0, y: 0, width: n.width || 0, height: n.height || 0,
+      fill: 'none', ...strokeAttrs(n),
+    }));
+  }
+
+  return g;
+}
+
+function renderRef(n, defs, ox, oy) {
+  const src = reusableMap[n.ref];
+  if (!src) return null;
+  return renderNode({ ...src, ...n, type: src.type }, defs, ox, oy);
+}
+
+function renderNote(n, ox, oy) {
+  const g = svgEl('g', { transform: `translate(${(n.x||0)+ox},${(n.y||0)+oy})` });
+  g.appendChild(svgEl('rect', {
+    x: 0, y: 0, width: n.width || 200, height: n.height || 80,
+    fill: '#fffde7', rx: 5, stroke: '#f9a825', 'stroke-width': 1,
+  }));
+  const t = svgEl('text', { x: 8, y: 20, fill: '#555', 'font-size': 12 });
+  t.textContent = String(n.content || n.text || '').slice(0, 120);
+  g.appendChild(t);
+  return g;
+}
+
+function renderIconFont(n, ox, oy) {
+  const t = svgEl('text', {
+    x: (n.x || 0) + ox, y: (n.y || 0) + oy + (n.fontSize || 16),
+    fill: resolveColor(n.fill) || '#000',
+    'font-size': n.fontSize || 16,
+    'font-family': n.fontFamily || 'sans-serif',
+  });
+  t.textContent = n.content || n.icon || '';
+  return t;
+}
+
+function renderImage(n, defs, ox, oy) {
+  // We can't load external images in client-only mode unless they are data URIs
+  const el = svgEl('image', {
+    x: (n.x || 0) + ox, y: (n.y || 0) + oy,
+    width: n.width || 0, height: n.height || 0,
+    preserveAspectRatio: 'xMidYMid meet',
+  });
+  const src = n.src || n.url || n.href || n.data;
+  if (src) el.setAttribute('href', src);
+  else {
+    // Placeholder
+    const g = svgEl('g');
+    g.appendChild(svgEl('rect', { x: (n.x||0)+ox, y: (n.y||0)+oy, width: n.width||0, height: n.height||0, fill: '#e0e0e0', stroke: '#bbb', 'stroke-width': 1 }));
+    return g;
+  }
+  return el;
+}
+
+// ── Evolus XML Page ──
+function renderEvolusPage(svg, fr, defs) {
+  const page = fr._evolusPage;
+  if (!page) return;
+
+  svg.appendChild(svgEl('rect', {
+    x: 0, y: 0, width: fr.width, height: fr.height, fill: '#ffffff',
+  }));
+
+  // Try to extract inline SVG / shape elements
+  const svgEls = page.querySelectorAll('svg, SVG');
+  if (svgEls.length > 0) {
+    for (const s of svgEls) {
+      const imported = document.importNode(s, true);
+      svg.appendChild(imported);
+    }
+    return;
+  }
+
+  // Render text listing of shapes
+  let y = 36;
+  const shapes = page.querySelectorAll('[id]');
+  const hdr = svgEl('text', { x: 24, y: 20, fill: '#999', 'font-size': 13, 'font-weight': '600' });
+  hdr.textContent = `Evolus Pencil – ${fr.name} (XML limited preview)`;
+  svg.appendChild(hdr);
+
+  for (const s of shapes) {
+    if (y > fr.height - 20) break;
+    const row = svgEl('text', { x: 24, y, fill: '#ccc', 'font-size': 12 });
+    row.textContent = `${s.tagName}: ${s.getAttribute('id') || ''} ${s.getAttribute('name') || ''}`;
+    svg.appendChild(row);
+    y += 20;
+  }
+
+  if (shapes.length === 0) {
+    const t = svgEl('text', {
+      x: fr.width / 2, y: fr.height / 2,
+      fill: '#666', 'font-size': 15,
+      'text-anchor': 'middle', 'dominant-baseline': 'middle',
+    });
+    t.textContent = 'Evolus Pencil XML format — full SVG rendering requires Pencil app';
+    svg.appendChild(t);
+  }
+}
+
+// ── Evolus Stencil ──
+function renderStencils(svg, fr, defs) {
+  const shapes = fr._stencilShapes || [];
+  svg.appendChild(svgEl('rect', { x: 0, y: 0, width: fr.width, height: fr.height, fill: '#1a1a1a' }));
+
+  const hdr = svgEl('text', { x: 24, y: 32, fill: '#e4e4f0', 'font-size': 16, 'font-weight': '700' });
+  hdr.textContent = `${fr.name} — Stencil Collection (${shapes.length} shapes)`;
+  svg.appendChild(hdr);
+
+  let y = 60;
+  for (const s of shapes) {
+    const g = svgEl('g');
+    const bg = svgEl('rect', { x: 16, y, width: fr.width - 32, height: 80, fill: '#252535', rx: 6 });
+    g.appendChild(bg);
+
+    const name = svgEl('text', { x: 30, y: y + 24, fill: '#a0a0c0', 'font-size': 13, 'font-weight': '600' });
+    name.textContent = s.getAttribute('displayName') || s.getAttribute('id') || 'Shape';
+    g.appendChild(name);
+
+    // Try to grab SVG content from p:Content
+    const content = s.querySelector('Content');
+    if (content) {
+      const svgInner = content.querySelector('svg, *[viewBox]');
+      if (svgInner) {
+        const imp = document.importNode(svgInner, true);
+        imp.setAttribute('x', '30');
+        imp.setAttribute('y', String(y + 30));
+        imp.setAttribute('width', '60');
+        imp.setAttribute('height', '40');
+        g.appendChild(imp);
+      }
+    }
+
+    svg.appendChild(g);
+    y += 96;
+    if (y > fr.height - 100) break;
+  }
+}
+
+// ─────────────────────────────────────────
+// SVG HELPERS
+// ─────────────────────────────────────────
+function svgEl(tag, attrs = {}) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v !== undefined && v !== null && v !== '') el.setAttribute(k, v);
+  }
+  return el;
+}
+
+function withRotation(el, n, ox, oy) {
+  if (!n.rotation && !n.angle) return el;
+  const deg = n.rotation || n.angle || 0;
+  const cx  = (n.x || 0) + ox + (n.width  || 0) / 2;
+  const cy  = (n.y || 0) + oy + (n.height || 0) / 2;
+  const g   = svgEl('g', { transform: `rotate(${deg},${cx},${cy})` });
+  g.appendChild(el);
+  return g;
+}
+
+function opacityAttr(n) {
+  return n.opacity !== undefined && n.opacity !== 1
+    ? { opacity: n.opacity }
+    : {};
+}
+
+function strokeAttrs(n) {
+  const s = n.stroke;
+  if (!s) return {};
+  if (typeof s === 'string') return { stroke: resolveColor(s), 'stroke-width': n.strokeWidth || 1 };
+  if (typeof s === 'object') {
+    const a = {};
+    if (s.color)     a.stroke           = resolveColor(s.color);
+    if (s.width)     a['stroke-width']  = s.width;
+    if (s.dashArray) a['stroke-dasharray'] = Array.isArray(s.dashArray) ? s.dashArray.join(' ') : s.dashArray;
+    if (s.lineCap)   a['stroke-linecap']   = s.lineCap;
+    if (s.lineJoin)  a['stroke-linejoin']  = s.lineJoin;
+    if (!a.stroke)   a.stroke              = '#000';
+    return a;
+  }
+  return {};
+}
+
+// Resolve fill — can be gradient; creates defs entry if needed
+let _defCount = 0;
+function fillAttr(n, defs) {
+  const f = n.fill;
+  if (!f || f === 'none') return 'none';
+  if (typeof f === 'string') return resolveColor(f);
+
+  if (typeof f === 'object') {
+    // Linear gradient
+    if (f.type === 'linear' || f.stops) {
+      const id  = `grad_${_defCount++}`;
+      const def = svgEl('linearGradient', {
+        id,
+        x1: f.x1 !== undefined ? f.x1 : '0%',
+        y1: f.y1 !== undefined ? f.y1 : '0%',
+        x2: f.x2 !== undefined ? f.x2 : '100%',
+        y2: f.y2 !== undefined ? f.y2 : '0%',
+        gradientUnits: 'objectBoundingBox',
+      });
+      (f.stops || []).forEach(stop => {
+        def.appendChild(svgEl('stop', {
+          offset:       stop.position !== undefined ? stop.position : stop.offset,
+          'stop-color': resolveColor(stop.color),
+          'stop-opacity': stop.opacity !== undefined ? stop.opacity : 1,
+        }));
+      });
+      defs.appendChild(def);
+      return `url(#${id})`;
+    }
+    // Radial gradient
+    if (f.type === 'radial') {
+      const id  = `rgrad_${_defCount++}`;
+      const def = svgEl('radialGradient', { id, gradientUnits: 'objectBoundingBox' });
+      (f.stops || []).forEach(stop => {
+        def.appendChild(svgEl('stop', {
+          offset:       stop.position !== undefined ? stop.position : stop.offset,
+          'stop-color': resolveColor(stop.color),
+        }));
+      });
+      defs.appendChild(def);
+      return `url(#${id})`;
+    }
+    // RGBA object { r, g, b, a }
+    if (f.r !== undefined) {
+      const r = Math.round((f.r || 0) * 255);
+      const g = Math.round((f.g || 0) * 255);
+      const b = Math.round((f.b || 0) * 255);
+      const a = f.a !== undefined ? f.a : 1;
+      return `rgba(${r},${g},${b},${a})`;
+    }
+    if (f.color) return resolveColor(f.color);
+    // Fallback
+    if (f.stops?.length) return resolveColor(f.stops[0].color);
+  }
+  return 'none';
+}
+
+const THEME = {
+  '$color.background': '#ffffff', '$color.text': '#111111',
+  '$color.primary':    '#6366f1', '$color.secondary': '#8b5cf6',
+  '$color.accent':     '#ec4899', '$color.border':    '#e5e7eb',
+  '$color.muted':      '#9ca3af', '$color.error':     '#ef4444',
+  '$color.success':    '#22c55e', '$color.warning':   '#f59e0b',
+};
+
+function resolveColor(c) {
+  if (!c || c === 'none' || c === 'transparent') return c || 'none';
+  if (typeof c === 'string') {
+    if (c.startsWith('$')) return THEME[c] || '#888';
+    return c;
+  }
+  if (typeof c === 'object') {
+    if (c.r !== undefined) {
+      return `rgba(${Math.round((c.r||0)*255)},${Math.round((c.g||0)*255)},${Math.round((c.b||0)*255)},${c.a??1})`;
+    }
+    if (c.color) return resolveColor(c.color);
+  }
+  return '#000';
+}
+
+const THEME_SIZE = {
+  '$text.title': 32, '$text.heading': 24, '$text.subheading': 20,
+  '$text.body':  16, '$text.small':   12, '$text.caption':    11,
+};
+function resolveDim(v) {
+  if (typeof v === 'number') return v;
+  if (typeof v === 'string') {
+    if (v.startsWith('$')) return THEME_SIZE[v] || 16;
+    return parseFloat(v) || 16;
+  }
+  return null;
+}
+
+let _uidN = 0;
+function uid() { return `_${_uidN++}`; }
+
+// ─────────────────────────────────────────
+// PAN & ZOOM
+// ─────────────────────────────────────────
+const viewport      = document.getElementById('viewport');
+const canvasXform   = document.getElementById('canvasTransform');
+
+viewport.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta   = e.deltaY > 0 ? -0.12 : 0.12;
+  const rect    = viewport.getBoundingClientRect();
+  const mx      = e.clientX - rect.left;
+  const my      = e.clientY - rect.top;
+  const prev    = zoom;
+  zoom = clamp(zoom * (1 + delta), 0.05, 50);
+  panX = mx - (mx - panX) * (zoom / prev);
+  panY = my - (my - panY) * (zoom / prev);
+  applyTransform();
+}, { passive: false });
+
+viewport.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning = true;
+  panStart  = { x: e.clientX - panX, y: e.clientY - panY };
+  viewport.style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  panX = e.clientX - panStart.x;
+  panY = e.clientY - panStart.y;
+  applyTransform();
+});
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  viewport.style.cursor = '';
+});
+
+// Touch pan
+let touchStart = null;
+viewport.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    touchStart = { x: e.touches[0].clientX - panX, y: e.touches[0].clientY - panY };
+  }
+});
+viewport.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && touchStart) {
+    panX = e.touches[0].clientX - touchStart.x;
+    panY = e.touches[0].clientY - touchStart.y;
+    applyTransform();
+  }
+}, { passive: false });
+viewport.addEventListener('touchend', () => { touchStart = null; });
+
+function applyTransform() {
+  canvasXform.style.transform = `translate(${panX}px,${panY}px) scale(${zoom})`;
+  document.getElementById('zoomLbl').textContent = `${Math.round(zoom * 100)}%`;
+}
+
+function adjustZoom(delta) {
+  const rect  = viewport.getBoundingClientRect();
+  const cx    = rect.width  / 2;
+  const cy    = rect.height / 2;
+  const prev  = zoom;
+  zoom = clamp(zoom + delta, 0.05, 50);
+  panX = cx - (cx - panX) * (zoom / prev);
+  panY = cy - (cy - panY) * (zoom / prev);
+  applyTransform();
+}
+
+function resetZoom() {
+  const svg  = document.getElementById('mainSvg');
+  const rect = viewport.getBoundingClientRect();
+  zoom = 1;
+  panX = (rect.width  - parseFloat(svg.getAttribute('width')  || 0)) / 2;
+  panY = (rect.height - parseFloat(svg.getAttribute('height') || 0)) / 2;
+  applyTransform();
+}
+
+function fitToScreen() {
+  const svg  = document.getElementById('mainSvg');
+  const svgW = parseFloat(svg.getAttribute('width')  || 800);
+  const svgH = parseFloat(svg.getAttribute('height') || 600);
+  const rect = viewport.getBoundingClientRect();
+  const pad  = 48;
+  zoom = Math.min((rect.width - pad * 2) / svgW, (rect.height - pad * 2) / svgH, 4);
+  panX = (rect.width  - svgW * zoom) / 2;
+  panY = (rect.height - svgH * zoom) / 2;
+  applyTransform();
+}
+
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+// ─────────────────────────────────────────
+// UI FEEDBACK HELPERS
+// ─────────────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('urlFeedback');
+  el.innerHTML = `<div class="error-msg"><span>⚠️</span><span>${esc(msg)}</span></div>`;
+}
+function showLoading() {
+  const el = document.getElementById('urlFeedback');
+  el.innerHTML = `<div class="loading-row"><div class="spinner"></div><span>Loading…</span></div>`;
+}
+function clearFeedback() {
+  document.getElementById('urlFeedback').innerHTML = '';
+}
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if (document.getElementById('viewer').hidden) return;
+  if (e.key === '=' || e.key === '+') adjustZoom(0.15);
+  if (e.key === '-')                  adjustZoom(-0.15);
+  if (e.key === '0')                  fitToScreen();
+  if (e.key === '1')                  resetZoom();
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    const idx = frames.indexOf(selectedFr);
+    if (idx < frames.length - 1) selectFrame(frames[idx + 1]);
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    const idx = frames.indexOf(selectedFr);
+    if (idx > 0) selectFrame(frames[idx - 1]);
+  }
+});
+</script>
+</body>
+</html>
