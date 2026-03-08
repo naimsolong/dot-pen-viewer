@@ -42,28 +42,28 @@
   <meta name="color-scheme" content="dark" />
   <style>
     :root {
-      --bg: #0d0d12;
-      --surface: #16161f;
-      --surface2: #1e1e2a;
-      --surface3: #252534;
-      --border: #2a2a3a;
-      --accent: #7c6bff;
-      --accent-hover: #9b8dff;
-      --accent-dim: rgba(124,107,255,0.12);
-      --text: #e4e4f0;
-      --text-muted: #7777a0;
+      --bg: #070b14;
+      --surface: #0d1220;
+      --surface2: #121b2e;
+      --surface3: #192338;
+      --border: #1e2d45;
+      --accent: #00c8e8;
+      --accent-hover: #00deff;
+      --accent-dim: rgba(0,200,232,0.10);
+      --text: #e8edf5;
+      --text-muted: #4a6080;
       --error: #ff6b6b;
-      --warn-bg: #1a1400;
-      --warn-border: #3d3200;
-      --warn-text: #d4a800;
+      --warn-bg: #0d1a0d;
+      --warn-border: #1a3a1a;
+      --warn-text: #4ade80;
       --success: #4ade80;
-      --radius: 8px;
+      --radius: 6px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
       background: var(--bg);
       color: var(--text);
       height: 100dvh;
@@ -98,8 +98,8 @@
     .logo-mark {
       width: 30px;
       height: 30px;
-      background: linear-gradient(135deg, #7c6bff 0%, #a855f7 100%);
-      border-radius: 7px;
+      background: linear-gradient(135deg, #00a8c8 0%, #00c8e8 100%);
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -111,12 +111,13 @@
       align-items: center;
       gap: 6px;
       padding: 5px 11px;
-      background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
-      border-radius: 20px;
-      font-size: 11.5px;
-      color: var(--warn-text);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
       white-space: nowrap;
+      letter-spacing: 0.03em;
     }
 
     .header-actions { display: flex; gap: 8px; align-items: center; }
@@ -156,34 +157,56 @@
     #landing {
       flex: 1;
       overflow-y: auto;
-      /* no justify-content:center here — that clips the top when content overflows */
     }
     .landing-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 28px;
-      padding: 40px 20px;
-      /* margin:auto pushes the block to center vertically when there's room,
-         but still allows scrolling to the very top when content is taller */
+      padding: 48px 20px 40px;
       margin: auto;
+      max-width: 560px;
     }
 
-    .hero {
-      text-align: center;
-      max-width: 480px;
+    /* Hero */
+    .hero { width: 100%; }
+    .hero-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 18px;
     }
-    .hero h2 {
-      font-size: 30px;
+    .hero-title {
+      font-size: clamp(42px, 7vw, 64px);
       font-weight: 800;
-      background: linear-gradient(135deg, #7c6bff 0%, #c084fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 10px;
-      letter-spacing: -0.5px;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
     }
-    .hero p { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; }
+    .hero-title-white { color: var(--text); display: block; }
+    .hero-title-cyan  { color: var(--accent); display: block; }
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .hero-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 18px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 10px;
+    }
     .hero a {
       color: var(--accent);
       text-decoration: none;
@@ -191,8 +214,8 @@
     }
     .hero a:hover { text-decoration: underline; }
     .hero code {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 13px;
+      font-family: inherit;
+      font-size: 12.5px;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -200,59 +223,22 @@
       color: var(--text);
     }
 
-    /* ─── Feature Strip ─── */
-    .feature-strip {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-      max-width: 520px;
-    }
-    .feature-card {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .feature-card .fc-icon { font-size: 18px; }
-    .feature-card .fc-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .feature-card .fc-body {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    @media (max-width: 480px) {
-      .feature-strip { flex-direction: column; }
-    }
-
     /* ─── Drop Zone ─── */
     .drop-zone {
       width: 100%;
-      max-width: 520px;
-      border: 2px dashed var(--border);
-      border-radius: 16px;
-      padding: 44px 32px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
       text-align: center;
       cursor: pointer;
       background: var(--surface);
-      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      transition: border-color 0.2s, background 0.2s;
     }
     .drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
-    .drop-zone.drag-over {
-      border-color: var(--accent);
-      background: var(--accent-dim);
-      transform: scale(1.01);
-    }
-    .drop-icon { font-size: 44px; margin-bottom: 14px; }
-    .drop-zone h3 { font-size: 17px; font-weight: 700; margin-bottom: 7px; }
-    .drop-zone p { color: var(--text-muted); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+    .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-dim); }
+    .drop-icon { font-size: 36px; margin-bottom: 10px; }
+    .drop-zone h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .drop-zone p { color: var(--text-muted); font-size: 12.5px; margin-bottom: 16px; line-height: 1.5; }
 
     /* ─── Divider ─── */
     .or-divider {
@@ -260,21 +246,20 @@
       align-items: center;
       gap: 12px;
       width: 100%;
-      max-width: 520px;
     }
     .or-line { flex: 1; height: 1px; background: var(--border); }
-    .or-divider span { color: var(--text-muted); font-size: 12px; }
+    .or-divider span { color: var(--text-muted); font-size: 10.5px; letter-spacing: 0.08em; }
 
     /* ─── URL Section ─── */
-    .url-section { width: 100%; max-width: 520px; }
+    .url-section { width: 100%; }
     .url-section label {
       display: block;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.1em;
       color: var(--text-muted);
-      margin-bottom: 7px;
+      margin-bottom: 6px;
     }
     .url-row { display: flex; gap: 8px; }
     .url-input {
@@ -284,7 +269,8 @@
       border-radius: var(--radius);
       padding: 9px 13px;
       color: var(--text);
-      font-size: 13px;
+      font-size: 12px;
+      font-family: inherit;
       outline: none;
       transition: border-color 0.15s;
     }
@@ -292,8 +278,8 @@
     .url-input::placeholder { color: var(--text-muted); }
 
     .hint {
-      margin-top: 7px;
-      font-size: 11.5px;
+      margin-top: 6px;
+      font-size: 11px;
       color: var(--text-muted);
       line-height: 1.5;
     }
@@ -485,7 +471,7 @@
   </div>
 
   <div class="disclaimer-pill">
-    ⚠️ Client-only · No data saved or transmitted · All processing stays in your browser
+    ✏️ No data saved · All processing in your browser
   </div>
 
   <div class="header-actions">
@@ -501,32 +487,21 @@
   <!-- ── Landing ── -->
   <div id="landing">
   <div class="landing-inner">
-    <div class="hero">
-      <h2>The browser viewer for pencil.dev</h2>
-      <p>
-        <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer">pencil.dev</a>
-        is a VS Code-integrated design tool that saves your designs as <code>.pen</code> files
-        right alongside your code. This companion viewer lets you open, inspect, and share
-        those files instantly in any browser — no install, no sign-up, nothing leaves your device.
-      </p>
-    </div>
 
-    <!-- Feature Strip -->
-    <div class="feature-strip">
-      <div class="feature-card">
-        <span class="fc-icon">🖊️</span>
-        <span class="fc-title">pencil.dev companion</span>
-        <span class="fc-body">Built for <code>.pen</code> files created by the pencil.dev VS Code extension.</span>
-      </div>
-      <div class="feature-card">
-        <span class="fc-icon">🔗</span>
-        <span class="fc-title">Git-friendly</span>
-        <span class="fc-body">Paste a GitHub URL to preview designs stored directly in your repository.</span>
-      </div>
-      <div class="feature-card">
-        <span class="fc-icon">🔒</span>
-        <span class="fc-title">Zero install</span>
-        <span class="fc-body">Runs 100% in the browser — no server, no account, no data transmitted.</span>
+    <!-- Hero -->
+    <div class="hero">
+      <p class="hero-label">// OPEN SOURCE DESIGN TOOL</p>
+      <h1 class="hero-title">
+        <span class="hero-title-white">dot-pen</span>
+        <span class="hero-title-cyan">viewer</span>
+      </h1>
+      <p class="hero-sub">View .pen files in your browser</p>
+      <div class="hero-divider"></div>
+      <div class="hero-tags">
+        <span class="hero-tag">client-only</span>
+        <span class="hero-tag">drag &amp; drop</span>
+        <span class="hero-tag">github url</span>
+        <span class="hero-tag">zero install</span>
       </div>
     </div>
 
@@ -568,6 +543,7 @@
       </p>
       <div class="feedback" id="urlFeedback"></div>
     </div>
+
   </div><!-- /landing-inner -->
   </div><!-- /landing -->
 
